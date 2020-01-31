@@ -82,6 +82,7 @@ def run_cora():
     graphsage = SupervisedGraphSage(7, enc2)
 #    graphsage.cuda()
     rand_indices = np.random.permutation(num_nodes)
+    # test
     test = rand_indices[:1000]
     val = rand_indices[1000:1500]
     train = list(rand_indices[1500:])
