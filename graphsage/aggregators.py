@@ -40,13 +40,18 @@ class MeanAggregator(nn.Module):
             samp_neighs = [_set(_sample(to_neigh, 
                             num_sample,
                             )) if len(to_neigh) >= num_sample else to_neigh for to_neigh in to_neighs]
+        #     抽取num_sample数的近邻
         else:
             samp_neighs = to_neighs
+        #     如果不抽取的话用所有近邻作为近邻集合
 
         if self.gcn:
             samp_neighs = [samp_neigh + set([nodes[i]]) for i, samp_neigh in enumerate(samp_neighs)]
+        # 如果是GCN的话，把当前自己节点也加入集合（graphsage用的是自己节点的嵌入和邻居节点嵌入拼接，但GCN是一起求均值）
         unique_nodes_list = list(set.union(*samp_neighs))
         unique_nodes = {n:i for i,n in enumerate(unique_nodes_list)}
+        # 把所有的近邻节点放到一个集合里
+        # 一个是近邻节点的list，以及一个以节点为key，list的index为value的dict
         mask = Variable(torch.zeros(len(samp_neighs), len(unique_nodes)))
         column_indices = [unique_nodes[n] for samp_neigh in samp_neighs for n in samp_neigh]   
         row_indices = [i for i in range(len(samp_neighs)) for j in range(len(samp_neighs[i]))]
